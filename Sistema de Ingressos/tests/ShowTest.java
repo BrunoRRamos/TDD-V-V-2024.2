@@ -23,12 +23,14 @@ public class ShowTest {
     
     @After
     public void tearDown() throws Exception {
+        this.show.getLotes().get(this.show.getLotes().size()-1).resetCounter();
         this.show = null;
     }
 
     @Test
     public void TestaQuantidadeDeIngressosVip() {
-        List<Ingresso> ingressosVip = show.getIngressos()
+        Lote lote = show.getLoteById(1);
+        List<Ingresso> ingressosVip = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.VIP)
                 .toList().stream().toList();
@@ -42,7 +44,8 @@ public class ShowTest {
 
     @Test
     public void TestaQuantidadeDeIngressosMeia() {
-        List<Ingresso> ingressosMeia = show.getIngressos()
+        Lote lote = show.getLoteById(1);
+        List<Ingresso> ingressosMeia = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA)
                 .toList().stream().toList();
@@ -54,7 +57,8 @@ public class ShowTest {
 
     @Test
     public void TestaQuantidadeDeIngressosNormal() {
-        List<Ingresso> ingressosNormal = show.getIngressos()
+        Lote lote = show.getLoteById(1);
+        List<Ingresso> ingressosNormal = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.NORMAL)
                 .toList().stream().toList();
@@ -68,7 +72,8 @@ public class ShowTest {
 
     @Test
     public void TestaValorDoIngressoVip() {
-        Ingresso ingressoVip = show.getIngressos()
+        Lote lote = show.getLoteById(1);
+        Ingresso ingressoVip = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.VIP)
                 .findFirst()
@@ -80,7 +85,8 @@ public class ShowTest {
 
     @Test
     public void TestaValorDoIngressoMeia() {
-        Ingresso ingressoMeia = show.getIngressos()
+        Lote lote = show.getLoteById(1);
+        Ingresso ingressoMeia = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA)
                 .findFirst()
@@ -92,7 +98,8 @@ public class ShowTest {
 
     @Test
     public void TestaValorDoIngressoNormal() {
-        Ingresso ingressoNormal = show.getIngressos()
+        Lote lote = show.getLoteById(1);
+        Ingresso ingressoNormal = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.NORMAL)
                 .findFirst()
@@ -104,21 +111,21 @@ public class ShowTest {
 
     @Test
     public void TestaCompraDeIngressoVip() {
-        Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.VIP);
+        Ingresso ingressoComprado = this.show.comprarIngresso(1, TipoIngresso.VIP);
         assertNotNull(ingressoComprado);
         assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
     }
 
     @Test
     public void TestaCompraDeIngressoMeia() {
-        Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.MEIA_ENTRADA);
+        Ingresso ingressoComprado = this.show.comprarIngresso(1, TipoIngresso.MEIA_ENTRADA);
         assertNotNull(ingressoComprado);
         assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
     }
 
     @Test
     public void TestaCompraDeIngressoNormal() {
-        Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.NORMAL);
+        Ingresso ingressoComprado = this.show.comprarIngresso(1, TipoIngresso.NORMAL);
         assertNotNull(ingressoComprado);
         assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
     }
@@ -127,8 +134,8 @@ public class ShowTest {
     public void TestaCriacaoDeNovoLote() {
         int numeroDeIngressos = 100;
         double desconto = 0.10;
-        String loteId = this.show.criarNovoLote(numeroDeIngressos, desconto);
-        Lote lote = this.show.getLoteById(loteId);
+        double valoringresso = 300.0;
+        Lote lote = this.show.criarNovoLote(numeroDeIngressos, desconto, valoringresso);
 
         assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
     }
