@@ -1,3 +1,4 @@
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +20,11 @@ public class ShowTest {
 
         this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos);
     }
+    
+    @After
+    public void tearDown() throws Exception {
+        this.show = null;
+    }
 
     @Test
     public void TestaQuantidadeDeIngressosVip() {
@@ -36,7 +42,14 @@ public class ShowTest {
 
     @Test
     public void TestaQuantidadeDeIngressosMeia() {
-
+        List<Ingresso> ingressosMeia = show.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA)
+                .toList().stream().toList();
+        int totalIngressosMeia = ingressosMeia.size();
+        int totalIngressos = show.getTotalIngressos();
+        int qntMeiaExpected = (int) Math.ceil(totalIngressos * 0.10);
+        assertTrue(totalIngressosMeia == qntMeiaExpected);
     }
 
     @Test
