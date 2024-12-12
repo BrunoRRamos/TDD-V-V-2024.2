@@ -122,4 +122,14 @@ public class ShowTest {
         assertNotNull(ingressoComprado);
         assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
     }
+
+    @Test
+    public void TestaCriacaoDeNovoLote() {
+        int numeroDeIngressos = 100;
+        double desconto = 0.10;
+        String loteId = this.show.criarNovoLote(numeroDeIngressos, desconto);
+        Lote lote = this.show.getLoteById(loteId);
+
+        assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
+    }
 }
