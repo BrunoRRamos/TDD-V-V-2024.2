@@ -148,4 +148,16 @@ public class ShowTest {
         assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
         assertEquals(1.0, lote.getDesconto(), 0.0);
     }
+
+    @Test
+    public void TestaCriarLoteComDescontoMaiorQue25() {
+        int numeroDeIngressos = 100;
+        double desconto = 0.26;
+        double valoringresso = 300.0;
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            Lote lote = this.show.criarNovoLote(numeroDeIngressos, desconto, valoringresso);
+        });
+
+        assertEquals("Desconto deve ser menor ou igual a 25%", exception.getMessage());
+    }
 }
