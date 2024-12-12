@@ -9,12 +9,14 @@ public class Show {
     private boolean showEmDataEspecial;
     private int totalIngressos;
     private List<Ingresso> ingressos;
+    private double valorIngresso;
 
-    public Show(Date data, Double totalDespesaInfra, boolean showEmDataEspecial, int totalIngressos) {
+    public Show(Date data, Double totalDespesaInfra, boolean showEmDataEspecial, int totalIngressos, double valorIngresso) {
         this.data = data;
         this.totalDespesaInfra = totalDespesaInfra;
         this.showEmDataEspecial = showEmDataEspecial;
         this.totalIngressos = totalIngressos;
+        this.valorIngresso = valorIngresso;
         this.ingressos = new ArrayList<>();
         this.createIngressos();
     }
@@ -39,10 +41,14 @@ public class Show {
         return ingressos;
     }
 
+    public double getValorIngresso() {
+        return valorIngresso;
+    }
+
     private void geraIngressos(int qnt, TipoIngresso tipo) {
         for (int i = 0; i < qnt; i++) {
             String id = UUID.randomUUID().toString();
-            Ingresso newIngresso = new Ingresso(id, tipo, StatusIngresso.DISPONIVEL);
+            Ingresso newIngresso = new Ingresso(id, tipo, StatusIngresso.DISPONIVEL, this.valorIngresso);
             this.ingressos.add(newIngresso);
         }
     }
