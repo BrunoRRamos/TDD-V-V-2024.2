@@ -16,8 +16,9 @@ public class ShowTest {
         Double totalDespesaInfra = 50000.00;
         boolean showEmDataEspecial = true;
         int totalIngressos = 100;
+        double valorIngresso = 249.99;
 
-        this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos);
+        this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos, valorIngresso);
     }
     
     @After
@@ -63,5 +64,16 @@ public class ShowTest {
         int qntMeiaExpected = (int) Math.ceil(totalIngressos * 0.10);
         int qntNormalExpected = totalIngressos - qntVipExpected - qntMeiaExpected;
         assertTrue(totalIngressosNormal == qntNormalExpected);
+    }
+
+    @Test
+    public void TestaValorDoIngressoVip() {
+        Ingresso ingressoVip = show.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == TipoIngresso.VIP)
+                .findFirst()
+                .orElse(null);
+
+        assertTrue(ingressoVip.getValorIngresso() == show.getValorIngresso() * 2);
     }
 }
