@@ -35,4 +35,8 @@ public class Ingresso {
     public double getValorIngresso() {
         return valorIngresso;
     }
+
+    public void setStatus(StatusIngresso status) {
+        this.status = status;
+    }
 }

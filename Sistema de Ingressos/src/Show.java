@@ -45,6 +45,18 @@ public class Show {
         return valorIngresso;
     }
 
+    public Ingresso comprarIngresso(TipoIngresso tipoIngresso) {
+        Ingresso ingressoComprado = this.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == tipoIngresso)
+                .findFirst()
+                .orElse(null);
+
+        ingressoComprado.setStatus(StatusIngresso.VENDIDO);
+
+        return ingressoComprado;
+    }
+
     private void geraIngressos(int qnt, TipoIngresso tipo) {
         for (int i = 0; i < qnt; i++) {
             String id = UUID.randomUUID().toString();
