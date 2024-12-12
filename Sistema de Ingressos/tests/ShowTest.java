@@ -54,6 +54,15 @@ public class ShowTest {
 
     @Test
     public void TestaQuantidadeDeIngressosNormal() {
-
+        List<Ingresso> ingressosNormal = show.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == TipoIngresso.NORMAL)
+                .toList().stream().toList();
+        int totalIngressosNormal = ingressosNormal.size();
+        int totalIngressos = show.getTotalIngressos();
+        int qntVipExpected = (int) Math.floor(totalIngressos * 0.25);
+        int qntMeiaExpected = (int) Math.ceil(totalIngressos * 0.10);
+        int qntNormalExpected = totalIngressos - qntVipExpected - qntMeiaExpected;
+        assertTrue(totalIngressosNormal == qntNormalExpected);
     }
 }
