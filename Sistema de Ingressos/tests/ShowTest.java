@@ -74,6 +74,7 @@ public class ShowTest {
                 .findFirst()
                 .orElse(null);
 
+        assertNotNull(ingressoVip);
         assertTrue(ingressoVip.getValorIngresso() == show.getValorIngresso() * 2);
     }
 
@@ -85,6 +86,7 @@ public class ShowTest {
                 .findFirst()
                 .orElse(null);
 
+        assertNotNull(ingressoMeia);
         assertTrue(ingressoMeia.getValorIngresso() == show.getValorIngresso() / 2);
     }
 
@@ -96,6 +98,7 @@ public class ShowTest {
                 .findFirst()
                 .orElse(null);
 
+        assertNotNull(ingressoNormal);
         assertTrue(ingressoNormal.getValorIngresso() == show.getValorIngresso());
     }
 
