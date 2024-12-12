@@ -41,16 +41,22 @@ public class Show {
         return lotes;
     }
 
-    public double getValorIngresso() {
-        return valorIngresso;
-    }
-
     private void validaDesconto(double desconto) {
         if (desconto < 0) {
             throw new IllegalArgumentException("Desconto deve ser maior que zero");
         } else if (desconto > 0.25) {
             throw new IllegalArgumentException("Desconto deve ser menor ou igual a 25%");
         }
+    }
+
+    private Ingresso getIngresso(int loteId, TipoIngresso tipoIngresso) {
+        return this.getLoteById(loteId)
+                .getIngressos()
+                .stream()
+                .filter(e ->
+                        e.getStatus() == StatusIngresso.DISPONIVEL &&
+                                e.getTipo() == tipoIngresso)
+                .findFirst().orElse(null);
     }
 
     public Lote getLoteById(int id) {
@@ -74,7 +80,7 @@ public class Show {
         return ingressoComprado;
     }
 
-    protected Lote criarNovoLote(int numeroDeIngressos, double desconto, double valorIngresso) {
+    public Lote criarNovoLote(int numeroDeIngressos, double desconto, double valorIngresso) {
         this.validaDesconto(desconto);
         if (desconto == 0) {
             desconto = 1.0;
@@ -83,4 +89,32 @@ public class Show {
 
         return this.lotes.get(this.lotes.size() - 1);
     }
+
+    public int contaTotalIngressosDisponiveis(int loteId, TipoIngresso tipoIngresso) {
+        int numDeingressosDisponiveis = (int) this.getLoteById(loteId)
+                .getIngressos()
+                .stream()
+                .filter(e ->
+                        e.getStatus() == StatusIngresso.DISPONIVEL &&
+                                e.getTipo() == tipoIngresso)
+                .count();
+
+        return numDeingressosDisponiveis;
+    }
+
+    public double comprarIngressoComDesconto(int loteId, TipoIngresso tipoIngresso) {
+        int ingressosDisponiveis = this.contaTotalIngressosDisponiveis(loteId, tipoIngresso);
+        double valorDaCompra = 0;
+
+        if (ingressosDisponiveis > 0) {
+            Ingresso ingresso = this.getIngresso(loteId, tipoIngresso);
+            valorDaCompra = ingresso.getValorIngresso() * this.getLoteById(loteId).getDesconto();
+            this.comprarIngresso(loteId, tipoIngresso);
+        } else {
+            throw new RuntimeException("Não há ingressos disponiveis deste tipo");
+        }
+
+        return valorDaCompra;
+    }
+
 }

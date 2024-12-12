@@ -40,10 +40,14 @@ public class Lote {
         return desconto;
     }
 
+    public double getValorIngresso() {
+        return valorIngresso;
+    }
+
     private void geraIngressos(int qnt, TipoIngresso tipo) {
         for (int i = 0; i < qnt; i++) {
             String id = UUID.randomUUID().toString();
-            Ingresso newIngresso = new Ingresso(id, tipo, StatusIngresso.DISPONIVEL, this.valorIngresso);
+            Ingresso newIngresso = new Ingresso(id, tipo, StatusIngresso.DISPONIVEL, valorIngresso);
             this.ingressos.add(newIngresso);
         }
     }
