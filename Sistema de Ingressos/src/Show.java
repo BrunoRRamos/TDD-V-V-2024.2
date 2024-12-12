@@ -49,8 +49,9 @@ public class Show {
 
     private void createIngressos() {
         int qntVip = (int) Math.ceil(this.totalIngressos * 0.25);
+        int qntMeia = (int) Math.ceil(this.totalIngressos * 0.10);
 
         this.geraIngressos(qntVip, TipoIngresso.VIP);
-
+        this.geraIngressos(qntMeia, TipoIngresso.MEIA_ENTRADA);
     }
 }
