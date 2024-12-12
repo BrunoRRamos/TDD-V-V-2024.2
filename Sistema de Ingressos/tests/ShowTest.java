@@ -98,4 +98,10 @@ public class ShowTest {
 
         assertTrue(ingressoNormal.getValorIngresso() == show.getValorIngresso());
     }
+
+    @Test
+    public void TestaCompraDeIngressoVip() {
+        Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.VIP);
+        assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
+    }
 }
