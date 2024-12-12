@@ -1,10 +1,8 @@
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.util.Date;
 import java.util.List;
-
 import static org.junit.Assert.*;
 
 public class ShowTest {
@@ -138,5 +136,16 @@ public class ShowTest {
         Lote lote = this.show.criarNovoLote(numeroDeIngressos, desconto, valoringresso);
 
         assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
+    }
+
+    @Test
+    public void TestaCriarLoteSemDesconto() {
+        int numeroDeIngressos = 100;
+        double desconto = 0;
+        double valoringresso = 300.0;
+        Lote lote = this.show.criarNovoLote(numeroDeIngressos, desconto, valoringresso);
+
+        assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
+        assertEquals(1.0, lote.getDesconto(), 0.0);
     }
 }
