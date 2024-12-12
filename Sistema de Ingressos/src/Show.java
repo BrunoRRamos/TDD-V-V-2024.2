@@ -39,14 +39,18 @@ public class Show {
         return ingressos;
     }
 
+    private void geraIngressos(int qnt, TipoIngresso tipo) {
+        for (int i = 0; i < qnt; i++) {
+            String id = UUID.randomUUID().toString();
+            Ingresso newIngresso = new Ingresso(id, tipo, StatusIngresso.DISPONIVEL);
+            this.ingressos.add(newIngresso);
+        }
+    }
+
     private void createIngressos() {
         int qntVip = (int) Math.ceil(this.totalIngressos * 0.25);
 
-        for (int i = 0; i < qntVip; i++) {
-            String id = UUID.randomUUID().toString();
-            Ingresso newIngresso = new Ingresso(id, TipoIngresso.VIP, StatusIngresso.DISPONIVEL);
-            this.ingressos.add(newIngresso);
-        }
+        this.geraIngressos(qntVip, TipoIngresso.VIP);
 
     }
 }
