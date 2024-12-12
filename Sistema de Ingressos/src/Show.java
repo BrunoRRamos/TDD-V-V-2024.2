@@ -48,10 +48,16 @@ public class Show {
     }
 
     private void createIngressos() {
+        if (this.totalIngressos <= 0) {
+            throw new RuntimeException("Número de ingressos inválido");
+        }
+
         int qntVip = (int) Math.ceil(this.totalIngressos * 0.25);
         int qntMeia = (int) Math.ceil(this.totalIngressos * 0.10);
+        int qntNormal = this.totalIngressos - qntVip - qntMeia;
 
         this.geraIngressos(qntVip, TipoIngresso.VIP);
         this.geraIngressos(qntMeia, TipoIngresso.MEIA_ENTRADA);
+        this.geraIngressos(qntNormal, TipoIngresso.NORMAL);
     }
 }
