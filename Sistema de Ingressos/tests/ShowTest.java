@@ -108,4 +108,18 @@ public class ShowTest {
         assertNotNull(ingressoComprado);
         assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
     }
+
+    @Test
+    public void TestaCompraDeIngressoMeia() {
+        Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.MEIA_ENTRADA);
+        assertNotNull(ingressoComprado);
+        assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
+    }
+
+    @Test
+    public void TestaCompraDeIngressoNormal() {
+        Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.NORMAL);
+        assertNotNull(ingressoComprado);
+        assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
+    }
 }
