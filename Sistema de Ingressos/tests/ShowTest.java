@@ -17,8 +17,7 @@ public class ShowTest {
         boolean showEmDataEspecial = true;
         int totalIngressos = 100;
 
-        // Criar o objeto Show
-        Show show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos);
+        this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos);
     }
 
     @Test
