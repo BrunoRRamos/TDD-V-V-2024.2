@@ -102,6 +102,7 @@ public class ShowTest {
     @Test
     public void TestaCompraDeIngressoVip() {
         Ingresso ingressoComprado = this.show.comprarIngresso(TipoIngresso.VIP);
+        assertNotNull(ingressoComprado);
         assertTrue(ingressoComprado.getStatus() == StatusIngresso.VENDIDO);
     }
 }
