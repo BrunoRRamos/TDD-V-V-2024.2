@@ -178,9 +178,16 @@ public class ShowTest {
         int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.VIP);
         double valor = show.comprarIngressoComDesconto(1, TipoIngresso.VIP);
         int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.VIP);
-        System.out.println(valor);
-        System.out.println(499.98 * 0.25);
         assertTrue(totalIngressosDepoisCompra == totalIngressosAntesCompra - 1);
         assertTrue(valor == (499.98 * 0.25));
+    }
+
+    @Test
+    public void TestaComprarIngresssoNormalComDesconto() {
+        int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.NORMAL);
+        double valor = show.comprarIngressoComDesconto(1, TipoIngresso.NORMAL);
+        int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.NORMAL);
+        assertTrue(totalIngressosDepoisCompra == totalIngressosAntesCompra - 1);
+        assertTrue(valor == (249.99 * 0.25));
     }
 }
