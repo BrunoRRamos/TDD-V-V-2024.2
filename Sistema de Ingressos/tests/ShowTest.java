@@ -76,4 +76,15 @@ public class ShowTest {
 
         assertTrue(ingressoVip.getValorIngresso() == show.getValorIngresso() * 2);
     }
+
+    @Test
+    public void TestaValorDoIngressoMeia() {
+        Ingresso ingressoMeia = show.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA)
+                .findFirst()
+                .orElse(null);
+
+        assertTrue(ingressoMeia.getValorIngresso() == show.getValorIngresso() / 2);
+    }
 }
