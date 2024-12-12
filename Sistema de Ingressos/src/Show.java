@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Show {
     private Date data;
@@ -47,6 +45,14 @@ public class Show {
         return valorIngresso;
     }
 
+    private void validaDesconto(double desconto) {
+        if (desconto < 0) {
+            throw new IllegalArgumentException("Desconto deve ser maior que zero");
+        } else if (desconto > 0.25) {
+            throw new IllegalArgumentException("Desconto deve ser menor ou igual a 25%");
+        }
+    }
+
     public Lote getLoteById(int id) {
         return this.lotes
                 .stream()
@@ -69,6 +75,10 @@ public class Show {
     }
 
     protected Lote criarNovoLote(int numeroDeIngressos, double desconto, double valorIngresso) {
+        this.validaDesconto(desconto);
+        if (desconto == 0) {
+            desconto = 1.0;
+        }
         this.lotes.add(new Lote(numeroDeIngressos, desconto, valorIngresso));
 
         return this.lotes.get(this.lotes.size() - 1);
