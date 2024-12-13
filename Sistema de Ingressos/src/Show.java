@@ -3,6 +3,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Show {
+    private Artista artista;
     private Date data;
     private Double totalDespesaInfra;
     private boolean showEmDataEspecial;
@@ -11,34 +12,63 @@ public class Show {
     private double valorIngresso;
 
 
-    public Show(Date data, Double totalDespesaInfra, boolean showEmDataEspecial, int totalIngressos, double valorIngresso) {
+    public Show(Date data, Double totalDespesaInfra, boolean showEmDataEspecial, int totalIngressos, double valorIngresso, Artista artista) {
+        this.artista = artista;
         this.data = data;
-        this.totalDespesaInfra = totalDespesaInfra;
         this.showEmDataEspecial = showEmDataEspecial;
+        this.totalDespesaInfra = totalDespesaInfra;
         this.totalIngressos = totalIngressos;
         this.valorIngresso = valorIngresso;
         this.lotes = new ArrayList<>();
         this.criarNovoLote(this.totalIngressos, 0.25, this.valorIngresso);
-    }
 
-    public Date getData() {
-        return data;
-    }
-
-    public Double getTotalDespesaInfra() {
-        return totalDespesaInfra;
+        if(this.showEmDataEspecial){
+            this.totalDespesaInfra = totalDespesaInfra * 0.15;
+        }
     }
 
     public int getTotalIngressos() {
         return totalIngressos;
     }
 
-    public boolean isShowEmDataEspecial() {
-        return showEmDataEspecial;
-    }
-
     public List<Lote> getLotes() {
         return lotes;
+    }
+
+    private double calculaReceitaIngressos(TipoIngresso tipoIngresso, Lote lote) {
+        double total = lote.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == tipoIngresso &&
+                        e.getStatus() == StatusIngresso.VENDIDO)
+                .mapToDouble(lote::getValorIngressoComDesconto)
+                .sum();
+
+        return total;
+    }
+
+    private int getNumTotalIngressosVendidos(TipoIngresso tipoIngresso) {
+        return this.getLotes()
+                .stream()
+                .mapToInt(lote -> (int) lote.getIngressos()
+                        .stream()
+                        .filter(e -> e.getStatus() == StatusIngresso.VENDIDO && e.getTipo() == tipoIngresso)
+                        .count())
+                .sum();
+    }
+
+    private double calculaTotalReceitaIngressos(TipoIngresso tipoIngresso) {
+        return this.lotes
+                .stream()
+                .mapToDouble(lote -> this.calculaReceitaIngressos(tipoIngresso, lote))
+                .sum();
+    }
+
+    private double calculaReceita() {
+        double totalVendasVip = this.calculaTotalReceitaIngressos(TipoIngresso.VIP);
+        double totalVendasMeia = this.calculaTotalReceitaIngressos(TipoIngresso.MEIA_ENTRADA);
+        double totalVendasNormal = this.calculaTotalReceitaIngressos(TipoIngresso.NORMAL);
+
+        return  totalVendasVip + totalVendasMeia + totalVendasNormal;
     }
 
     private void validaTipoDeIngresso(TipoIngresso tipoIngresso) {
@@ -55,7 +85,7 @@ public class Show {
         }
     }
 
-    private Ingresso getIngresso(int loteId, TipoIngresso tipoIngresso) {
+    private Ingresso getIngressosDisponiveis(int loteId, TipoIngresso tipoIngresso) {
         return this.getLoteById(loteId)
                 .getIngressos()
                 .stream()
@@ -63,6 +93,15 @@ public class Show {
                         e.getStatus() == StatusIngresso.DISPONIVEL &&
                                 e.getTipo() == tipoIngresso)
                 .findFirst().orElse(null);
+    }
+
+    private StatusFinaceiro getStatusFinaceiro(double total) {
+        if(total > 0) {
+            return StatusFinaceiro.LUCRO;
+        } else if(total == 0) {
+            return StatusFinaceiro.ESTAVEL;
+        }
+        return StatusFinaceiro.PREJUIZO;
     }
 
     public Lote getLoteById(int id) {
@@ -114,7 +153,7 @@ public class Show {
         double valorDaCompra = 0;
 
         if (ingressosDisponiveis > 0) {
-            Ingresso ingresso = this.getIngresso(loteId, tipoIngresso);
+            Ingresso ingresso = this.getIngressosDisponiveis(loteId, tipoIngresso);
             valorDaCompra = ingresso.getValorIngresso() * this.getLoteById(loteId).getDesconto();
             this.comprarIngresso(loteId, tipoIngresso);
         } else {
@@ -122,6 +161,24 @@ public class Show {
         }
 
         return valorDaCompra;
+    }
+
+    public String gerarRelatorio() {
+        int vendasVip = this.getNumTotalIngressosVendidos(TipoIngresso.VIP);
+        int vendasMeia = this.getNumTotalIngressosVendidos(TipoIngresso.MEIA_ENTRADA);
+        int vendasNormal = this.getNumTotalIngressosVendidos(TipoIngresso.NORMAL);
+        double receitaTotal = this.calculaReceita();
+        double valorFinal = receitaTotal - this.totalDespesaInfra - this.artista.getCache();
+
+        StringBuilder relatorio = new StringBuilder();
+        relatorio.append("Relatório de Vendas:\n")
+                .append("Vendas VIP: ").append(vendasVip).append("\n")
+                .append("Vendas Meia Entrada: ").append(vendasMeia).append("\n")
+                .append("Vendas Normais: ").append(vendasNormal).append("\n")
+                .append("Receita liquida: ").append(valorFinal).append("\n")
+                .append("Status financeiro: ").append(this.getStatusFinaceiro(valorFinal));
+
+        return relatorio.toString();
     }
 
 }

@@ -44,6 +44,13 @@ public class Lote {
         return valorIngresso;
     }
 
+    public double getValorIngressoComDesconto(Ingresso ingresso) {
+        if (ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA) {
+            return valorIngresso;
+        }
+        return valorIngresso * desconto;
+    }
+
     private void geraIngressos(int qnt, TipoIngresso tipo) {
         for (int i = 0; i < qnt; i++) {
             String id = UUID.randomUUID().toString();
