@@ -1,4 +1,6 @@
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,12 @@ public class ProcessadorContas {
 
     public BigDecimal getValorPago() {
         return fatura.getValorTotal();
+    }
+
+    private void VerificaFaturaPaga() {
+        if (this.fatura.getValorTotal().compareTo(this.fatura.getValor()) >= 0) {
+            this.fatura.pagarFatura();
+        }
     }
 
     public void pagarConta(Long codConta, TiposPagamento tipo, Date data) {
@@ -54,12 +62,26 @@ public class ProcessadorContas {
                 }
             }
 
-            fatura.addValorPagamento(conta.getValorPago());
-            if (this.fatura.getValorTotal().compareTo(this.fatura.getValor()) >= 0) {
-                this.fatura.pagarFatura();
-            }
+            VerificaFaturaPaga();
+            return;
         }
 
+        if (tipo.equals(TiposPagamento.CARTAO_CREDITO)) {
+            LocalDateTime ldt = LocalDateTime.ofInstant(fatura.getData().toInstant(), ZoneId.systemDefault());
+            LocalDateTime minusDays = ldt.minusDays(15);
+            Date faturaMenos15Dias = Date.from(minusDays.atZone(ZoneId.systemDefault()).toInstant());
+
+            if (data.before(faturaMenos15Dias)) {
+                fatura.addValorPagamento(conta.getValorPago());
+                VerificaFaturaPaga();
+            }
+            return;
+        }
+
+        fatura.addValorPagamento(conta.getValorPago());
+        VerificaFaturaPaga();
 
     }
+
+
 }

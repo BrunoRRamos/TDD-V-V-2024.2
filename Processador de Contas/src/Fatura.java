@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Fatura {
     private Date data;
-    private BigDecimal valorTotal;
+    private BigDecimal valorTotal = BigDecimal.ZERO;
     private String nomeCliente;
 
     private List<Conta> contas;
     private BigDecimal valor;
 
-    private StatusFatura statusFatura;
+    private StatusFatura statusFatura = StatusFatura.PENDENTE;
 
     public Fatura(Date data, String nomeCliente, List<Conta> contas) {
         this.data = data;
