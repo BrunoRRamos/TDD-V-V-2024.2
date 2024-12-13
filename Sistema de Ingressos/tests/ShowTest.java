@@ -15,8 +15,9 @@ public class ShowTest {
         boolean showEmDataEspecial = true;
         int totalIngressos = 100;
         double valorIngresso = 249.99;
+        Artista artista = new Artista("Sorriso Ronaldo", 30000);
 
-        this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos, valorIngresso);
+        this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos, valorIngresso, artista);
     }
     
     @After
@@ -197,5 +198,19 @@ public class ShowTest {
             show.comprarIngressoComDesconto(1, TipoIngresso.MEIA_ENTRADA);
         });
         assertEquals("Desconto não aplicavel a ingresso do tipo: MEIA_ENTRADA", exception.getMessage());
+    }
+
+    @Test
+    public void TestaGerarRelatorioShow() {
+        String relatorioExpected = "Relatório de Vendas:\n" +
+                "Vendas VIP: 1\n" +
+                "Vendas Meia Entrada: 0\n" +
+                "Vendas Normais: 0\n" +
+                "Receita liquida: -37437.5025\n" +
+                "Status financeiro: PREJUIZO";
+        show.comprarIngressoComDesconto(1, TipoIngresso.VIP);
+        String relatorio = show.gerarRelatorio();
+        System.out.println(relatorio);
+        assertEquals(relatorioExpected, relatorio);
     }
 }
