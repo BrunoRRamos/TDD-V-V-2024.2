@@ -41,6 +41,12 @@ public class Show {
         return lotes;
     }
 
+    private void validaTipoDeIngresso(TipoIngresso tipoIngresso) {
+        if (tipoIngresso == TipoIngresso.MEIA_ENTRADA) {
+            throw new IllegalArgumentException("Desconto não aplicavel a ingresso do tipo: MEIA_ENTRADA");
+        }
+    }
+
     private void validaDesconto(double desconto) {
         if (desconto < 0) {
             throw new IllegalArgumentException("Desconto deve ser maior que zero");
@@ -103,6 +109,7 @@ public class Show {
     }
 
     public double comprarIngressoComDesconto(int loteId, TipoIngresso tipoIngresso) {
+        this.validaTipoDeIngresso(tipoIngresso);
         int ingressosDisponiveis = this.contaTotalIngressosDisponiveis(loteId, tipoIngresso);
         double valorDaCompra = 0;
 
