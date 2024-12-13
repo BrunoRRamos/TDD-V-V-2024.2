@@ -190,4 +190,12 @@ public class ShowTest {
         assertTrue(totalIngressosDepoisCompra == totalIngressosAntesCompra - 1);
         assertTrue(valor == (249.99 * 0.25));
     }
+
+    @Test
+    public void TestaComprarIngresssoMeialComDesconto() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            show.comprarIngressoComDesconto(1, TipoIngresso.MEIA_ENTRADA);
+        });
+        assertEquals("Desconto não aplicavel a ingresso do tipo: MEIA_ENTRADA", exception.getMessage());
+    }
 }
