@@ -25,18 +25,57 @@ public class ProcessadorContas {
         return fatura.getValorTotal();
     }
 
-    private void VerificaFaturaPaga() {
-        if (this.fatura.getValorTotal().compareTo(this.fatura.getValor()) >= 0) {
-            this.fatura.pagarFatura();
+    private void verificaFaturaPaga() {
+        if (fatura.getValorTotal().compareTo(fatura.getValor()) >= 0) {
+            fatura.pagarFatura();
         }
     }
 
-    public void pagarConta(Long codConta, TiposPagamento tipo, Date data) {
-        Optional<Conta> contaOptional = this.getContas().stream().filter(conta -> conta.getCodConta().equals(codConta)).findFirst();
-
+    private void validarConta(Optional<Conta> contaOptional) {
         if (contaOptional.isEmpty()) {
-            throw new RuntimeException("O codigo informado eh invalido ou inexistete");
+            throw new RuntimeException("O código informado é inválido ou inexistente");
         }
+    }
+
+    private void validarPagamentoBoleto(Conta conta) {
+        if (conta.getValorPago().compareTo(BigDecimal.valueOf(5000)) > 0) {
+            throw new RuntimeException("Valor da conta deve ser menor que 5000 para ser paga com boleto");
+        }
+
+        if (conta.getValorPago().compareTo(BigDecimal.valueOf(0.01)) < 0) {
+            throw new RuntimeException("Valor da conta deve ser maior que 0.01 para ser paga com boleto");
+        }
+    }
+
+    private void processarPagamentoBoleto(Conta conta, Date data) {
+        if (data.before(fatura.getData())) {
+            if (data.after(conta.getData())) {
+                fatura.addValorPagamento(conta.getValorPago().multiply(BigDecimal.valueOf(1.1)));
+            } else {
+                fatura.addValorPagamento(conta.getValorPago());
+            }
+        }
+        verificaFaturaPaga();
+    }
+
+    private void processarPagamentoCartaoCredito(Conta conta, Date data) {
+        LocalDateTime ldt = LocalDateTime.ofInstant(fatura.getData().toInstant(), ZoneId.systemDefault());
+        LocalDateTime minusDays = ldt.minusDays(15);
+        Date faturaMenos15Dias = Date.from(minusDays.atZone(ZoneId.systemDefault()).toInstant());
+
+        if (data.before(faturaMenos15Dias)) {
+            fatura.addValorPagamento(conta.getValorPago());
+            fatura.setStatusFatura(StatusFatura.PAGA);
+        }
+        verificaFaturaPaga();
+    }
+
+    public void pagarConta(Long codConta, TiposPagamento tipo, Date data) {
+        Optional<Conta> contaOptional = this.getContas().stream()
+                .filter(conta -> conta.getCodConta().equals(codConta))
+                .findFirst();
+
+        validarConta(contaOptional);
 
         Conta conta = contaOptional.get();
 
@@ -44,45 +83,15 @@ public class ProcessadorContas {
             return;
         }
 
-        if (tipo.equals(TiposPagamento.BOLETO)) {
+        if (tipo == TiposPagamento.BOLETO) {
+            validarPagamentoBoleto(conta);
+            processarPagamentoBoleto(conta, data);
+        } else if (tipo == TiposPagamento.CARTAO_CREDITO) {
+            processarPagamentoCartaoCredito(conta, data);
+        } else {
+            fatura.addValorPagamento(conta.getValorPago());
 
-            if (conta.getValorPago().compareTo(BigDecimal.valueOf(5000)) > 0) {
-                throw new RuntimeException("Valor da conta deve ser menor que 5000 para ser paga com boleto");
-            }
-
-            if (conta.getValorPago().compareTo(BigDecimal.valueOf(0.01)) < 0) {
-                throw new RuntimeException("Valor da conta deve ser maior que 0.01 para ser paga com boleto");
-            }
-
-            if (data.before(fatura.getData())) {
-                if (data.after(conta.getData())) {
-                    fatura.addValorPagamento(conta.getValorPago().multiply(BigDecimal.valueOf(1.1)));
-                } else {
-                    fatura.addValorPagamento(conta.getValorPago());
-                }
-            }
-
-            VerificaFaturaPaga();
-            return;
         }
-
-        if (tipo.equals(TiposPagamento.CARTAO_CREDITO)) {
-            LocalDateTime ldt = LocalDateTime.ofInstant(fatura.getData().toInstant(), ZoneId.systemDefault());
-            LocalDateTime minusDays = ldt.minusDays(15);
-            Date faturaMenos15Dias = Date.from(minusDays.atZone(ZoneId.systemDefault()).toInstant());
-
-            if (data.before(faturaMenos15Dias)) {
-                fatura.addValorPagamento(conta.getValorPago());
-                fatura.setStatusFatura(StatusFatura.PAGA);
-                VerificaFaturaPaga();
-            }
-            return;
-        }
-
-        fatura.addValorPagamento(conta.getValorPago());
-        VerificaFaturaPaga();
-
+        verificaFaturaPaga();
     }
-
-
-}
+    }

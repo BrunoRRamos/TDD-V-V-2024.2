@@ -58,7 +58,7 @@ public class ProcessadorContasTest {
     public void testContaInexistente() {
         ProcessadorContas processadorContas = new ProcessadorContas(faturaBoleto);
         Exception e = assertThrows(RuntimeException.class, () -> processadorContas.pagarConta(999999L, TiposPagamento.BOLETO, new Date(2024 - 1900, Calendar.FEBRUARY, 6)));
-        assertEquals("O codigo informado eh invalido ou inexistete", e.getMessage());
+        assertEquals("O código informado é inválido ou inexistente", e.getMessage());
     }
 
     @Test
