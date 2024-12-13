@@ -73,6 +73,7 @@ public class ProcessadorContas {
 
             if (data.before(faturaMenos15Dias)) {
                 fatura.addValorPagamento(conta.getValorPago());
+                fatura.setStatusFatura(StatusFatura.PAGA);
                 VerificaFaturaPaga();
             }
             return;

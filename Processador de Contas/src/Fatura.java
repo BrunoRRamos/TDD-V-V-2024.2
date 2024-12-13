@@ -23,6 +23,10 @@ public class Fatura {
         if (valor.compareTo(BigDecimal.ZERO) < 0) {
             throw new RuntimeException("Valor nao pode ser negativo");
         }
+
+        if (valor.compareTo(BigDecimal.ZERO) == 0) {
+            throw new RuntimeException("Valor nao pode ser 0");
+        }
         this.valorTotal = this.valorTotal.add(valor);
     }
 
