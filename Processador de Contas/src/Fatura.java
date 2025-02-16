@@ -21,11 +21,11 @@ public class Fatura {
 
     public void addValorPagamento(BigDecimal valor) {
         if (valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new RuntimeException("Valor nao pode ser negativo");
+            throw new RuntimeException("Valor não pode ser negativo");
         }
 
         if (valor.compareTo(BigDecimal.ZERO) == 0) {
-            throw new RuntimeException("Valor nao pode ser 0");
+            throw new RuntimeException("Valor não pode ser 0");
         }
         this.valorTotal = this.valorTotal.add(valor);
     }
