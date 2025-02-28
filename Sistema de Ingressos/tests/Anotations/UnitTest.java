@@ -8,8 +8,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD) // Só para métodos
-@Retention(RetentionPolicy.RUNTIME) // Disponível em tempo de execução
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
 @Test
 @Tag("Unit test")
 public @interface UnitTest {
