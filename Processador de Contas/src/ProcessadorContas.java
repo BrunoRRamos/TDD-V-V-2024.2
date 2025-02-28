@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -39,7 +40,7 @@ public class ProcessadorContas {
 
     private void validarPagamentoBoleto(Conta conta) {
         if (conta.getValorPago().compareTo(BigDecimal.valueOf(5000)) > 0) {
-            throw new RuntimeException("Valor da conta deve ser menor que 5000 para ser paga com boleto");
+            throw new RuntimeException("Valor da conta deve ser até 5000 para ser paga com boleto");
         }
 
         if (conta.getValorPago().compareTo(BigDecimal.valueOf(0.01)) < 0) {
@@ -47,30 +48,52 @@ public class ProcessadorContas {
         }
     }
 
-    private void processarPagamentoBoleto(Conta conta, Date data) {
+    private void processarPagamentoBoleto(Conta conta, Date data, BigDecimal valorPagamento) {
         if (data.before(fatura.getData())) {
-            if (data.after(conta.getData())) {
-                fatura.addValorPagamento(conta.getValorPago().multiply(BigDecimal.valueOf(1.1)));
+            if (data.compareTo(conta.getData()) > 0) {
+                BigDecimal valorComJuros = conta.getValorPago().multiply(BigDecimal.valueOf(1.1));
+                if (valorPagamento.compareTo(valorComJuros) >= 0) {
+                    fatura.addValorPagamento(valorComJuros);
+                } else {
+                    throw new RuntimeException("O valor do pagamento com juros é de: R$ " + valorComJuros + ", o valor do seu pagamento é de: R$ " + valorPagamento +
+                            ", portanto não é suficiente para pagar a conta com juros");
+                }
             } else {
                 fatura.addValorPagamento(conta.getValorPago());
             }
+            verificaFaturaPaga();
         }
-        verificaFaturaPaga();
     }
 
     private void processarPagamentoCartaoCredito(Conta conta, Date data) {
-        LocalDateTime ldt = LocalDateTime.ofInstant(fatura.getData().toInstant(), ZoneId.systemDefault());
-        LocalDateTime minusDays = ldt.minusDays(15);
-        Date faturaMenos15Dias = Date.from(minusDays.atZone(ZoneId.systemDefault()).toInstant());
+        LocalDate dataFatura = fatura.getData().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        LocalDate faturaMenos15Dias = dataFatura.minusDays(15);
 
-        if (data.before(faturaMenos15Dias)) {
+        Date dataLimite = Date.from(faturaMenos15Dias.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+
+        if (data.compareTo(dataLimite) <= 0) {
             fatura.addValorPagamento(conta.getValorPago());
             fatura.setStatusFatura(StatusFatura.PAGA);
+            verificaFaturaPaga();
+        }else{
+            throw new RuntimeException("A tentativa de pagamento por cartão deve ser feita com pelo menos 15 dias de antecedência");
         }
-        verificaFaturaPaga();
     }
 
-    public void pagarConta(Long codConta, TiposPagamento tipo, Date data) {
+    private void processarPagamentoTranferencia(Conta conta, Date data) {
+        if (conta.getData().compareTo(data) >= 0) {
+            fatura.addValorPagamento(conta.getValorPago());
+            fatura.setStatusFatura(StatusFatura.PAGA);
+            verificaFaturaPaga();
+        } else {
+            fatura.setStatusFatura(StatusFatura.PENDENTE);
+        }
+    }
+
+    public void pagarConta(Long codConta, TiposPagamento tipo, Date data, BigDecimal valorDoPagamento) {
         Optional<Conta> contaOptional = this.getContas().stream()
                 .filter(conta -> conta.getCodConta().equals(codConta))
                 .findFirst();
@@ -82,16 +105,18 @@ public class ProcessadorContas {
         if (conta.getData().after(fatura.getData())) {
             return;
         }
+        if (valorDoPagamento.compareTo(conta.getValorPago()) < 0) {
+            fatura.setStatusFatura(StatusFatura.PENDENTE);
+            return;
+        }
 
         if (tipo == TiposPagamento.BOLETO) {
             validarPagamentoBoleto(conta);
-            processarPagamentoBoleto(conta, data);
+            processarPagamentoBoleto(conta, data, valorDoPagamento);
         } else if (tipo == TiposPagamento.CARTAO_CREDITO) {
             processarPagamentoCartaoCredito(conta, data);
         } else {
-            fatura.addValorPagamento(conta.getValorPago());
-
+            processarPagamentoTranferencia(conta, data);
         }
-        verificaFaturaPaga();
     }
-    }
+}
