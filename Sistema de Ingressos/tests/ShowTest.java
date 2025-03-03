@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.Assert.*;
 
 public class ShowTest {
@@ -33,7 +35,7 @@ public class ShowTest {
         List<Ingresso> ingressosVip = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.VIP)
-                .toList().stream().toList();
+                .collect(Collectors.toList());
         int totalIngressosVip = ingressosVip.size();
         int totalIngressos = show.getTotalIngressos();
         int minVip = (int) Math.ceil(totalIngressos * 0.20);
@@ -48,7 +50,7 @@ public class ShowTest {
         List<Ingresso> ingressosMeia = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA)
-                .toList().stream().toList();
+                .collect(Collectors.toList());
         int totalIngressosMeia = ingressosMeia.size();
         int totalIngressos = show.getTotalIngressos();
         int qntMeiaExpected = (int) Math.ceil(totalIngressos * 0.10);
@@ -61,7 +63,7 @@ public class ShowTest {
         List<Ingresso> ingressosNormal = lote.getIngressos()
                 .stream()
                 .filter(e -> e.getTipo() == TipoIngresso.NORMAL)
-                .toList().stream().toList();
+                .collect(Collectors.toList());
         int totalIngressosNormal = ingressosNormal.size();
         int totalIngressos = show.getTotalIngressos();
         int qntVipExpected = (int) Math.floor(totalIngressos * 0.25);
