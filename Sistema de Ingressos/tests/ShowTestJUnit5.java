@@ -257,4 +257,22 @@ public class ShowTestJUnit5 {
         String relatorio = show.gerarRelatorio();
         assertEquals(relatorioExpected, relatorio);
     }
+
+    @UnitTest
+    @DisplayName("Testa comprar ingresso sem ingressos diponiveis")
+    public void TestaComprarIngresssoSemIngressosDisponiveis() {
+        Date dataDoShow = new Date();
+        Double totalDespesaInfra = 50000.00;
+        boolean showEmDataEspecial = true;
+        int totalIngressos = 1;
+        double valorIngresso = 249.99;
+        Artista artista = new Artista("Sorriso Ronaldo", 30000);
+
+        Show novoShow = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos, valorIngresso, artista);
+
+        assertThrows(RuntimeException.class, () -> {
+            novoShow.comprarIngressoComDesconto(1, TipoIngresso.VIP);
+            novoShow.comprarIngressoComDesconto(1, TipoIngresso.NORMAL);
+        });
+    }
 }

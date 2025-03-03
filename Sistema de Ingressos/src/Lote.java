@@ -61,7 +61,7 @@ public class Lote {
 
     private void createIngressos() {
         if (this.totalIngressos <= 0) {
-            throw new RuntimeException("Número de ingressos inválido");
+            throw new IllegalArgumentException("Número de ingressos inválido");
         }
 
         int qntVip = (int) Math.ceil(this.totalIngressos * 0.25);

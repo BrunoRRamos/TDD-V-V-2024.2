@@ -63,4 +63,12 @@ class LoteTestJUnit5 {
             assertEquals(90.0, lote.getValorIngressoComDesconto(normal));
         });
     }
+
+    @UnitTest
+    @DisplayName("Testa o retorno ao criar lote com numero de ingressos negativo")
+    void criarLoteComIngressosNegativos() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Lote(-1, 0.10, 100.0); // ou a exceção que o seu código lançar
+        });
+    }
 }
