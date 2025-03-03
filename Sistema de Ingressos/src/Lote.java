@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Lote {
-    private static final AtomicInteger sequence = new AtomicInteger(0);
+    private volatile AtomicInteger sequence = new AtomicInteger(0);
     private int id;
     private List<Ingresso> ingressos;
     private int totalIngressos;

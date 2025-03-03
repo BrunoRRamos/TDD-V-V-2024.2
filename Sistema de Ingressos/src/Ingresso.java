@@ -1,5 +1,3 @@
-import java.io.ObjectInputFilter;
-
 public class Ingresso {
     private String id;
     private TipoIngresso tipo;
