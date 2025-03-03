@@ -1,6 +1,9 @@
+package processador;
+
+import processador.Conta;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +32,8 @@ public class ProcessadorContas {
     private void verificaFaturaPaga() {
         if (fatura.getValorTotal().compareTo(fatura.getValor()) >= 0) {
             fatura.pagarFatura();
+        } else {
+            fatura.setStatusFatura(StatusFatura.PENDENTE);
         }
     }
 
@@ -49,9 +54,10 @@ public class ProcessadorContas {
     }
 
     private void processarPagamentoBoleto(Conta conta, Date data, BigDecimal valorPagamento) {
-        if (data.before(fatura.getData())) {
+        BigDecimal valorComJuros = conta.getValorPago().multiply(BigDecimal.valueOf(1.1));
+        if (data.compareTo(fatura.getData()) <= 0) {
             if (data.compareTo(conta.getData()) > 0) {
-                BigDecimal valorComJuros = conta.getValorPago().multiply(BigDecimal.valueOf(1.1));
+                valorComJuros = conta.getValorPago().multiply(BigDecimal.valueOf(1.1));
                 if (valorPagamento.compareTo(valorComJuros) >= 0) {
                     fatura.addValorPagamento(valorComJuros);
                 } else {
@@ -62,6 +68,13 @@ public class ProcessadorContas {
                 fatura.addValorPagamento(conta.getValorPago());
             }
             verificaFaturaPaga();
+        } else {
+            if (valorPagamento.compareTo(valorComJuros) >= 0) {
+                fatura.addValorPagamento(valorComJuros);
+            } else {
+                throw new RuntimeException("O valor do pagamento com juros é de: R$ " + valorComJuros + ", o valor do seu pagamento é de: R$ " + valorPagamento +
+                        ", portanto não é suficiente para pagar a conta com juros");
+            }
         }
     }
 
@@ -76,20 +89,20 @@ public class ProcessadorContas {
 
         if (data.compareTo(dataLimite) <= 0) {
             fatura.addValorPagamento(conta.getValorPago());
-            fatura.setStatusFatura(StatusFatura.PAGA);
             verificaFaturaPaga();
-        }else{
+        } else {
             throw new RuntimeException("A tentativa de pagamento por cartão deve ser feita com pelo menos 15 dias de antecedência");
         }
     }
 
     private void processarPagamentoTranferencia(Conta conta, Date data) {
-        if (conta.getData().compareTo(data) >= 0) {
-            fatura.addValorPagamento(conta.getValorPago());
-            fatura.setStatusFatura(StatusFatura.PAGA);
-            verificaFaturaPaga();
+        if (data.compareTo(fatura.getData()) <= 0) {
+                fatura.addValorPagamento(conta.getValorPago());
+                verificaFaturaPaga();
+
         } else {
-            fatura.setStatusFatura(StatusFatura.PENDENTE);
+            throw new RuntimeException("A data do pagamento deve ser anterior à data da fatura");
+
         }
     }
 
@@ -106,8 +119,8 @@ public class ProcessadorContas {
             return;
         }
         if (valorDoPagamento.compareTo(conta.getValorPago()) < 0) {
-            fatura.setStatusFatura(StatusFatura.PENDENTE);
-            return;
+            verificaFaturaPaga();
+            throw new RuntimeException("O valor do pagamento não é suficiente");
         }
 
         if (tipo == TiposPagamento.BOLETO) {

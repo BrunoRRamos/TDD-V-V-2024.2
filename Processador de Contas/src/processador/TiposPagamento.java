@@ -1,3 +1,5 @@
+package processador;
+
 public enum TiposPagamento {
     BOLETO,
     CARTAO_CREDITO,
