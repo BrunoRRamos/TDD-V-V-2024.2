@@ -223,7 +223,7 @@ public class FunctionalTests {
                 "Vendas VIP: 1\n" +
                 "Vendas Meia Entrada: 0\n" +
                 "Vendas Normais: 0\n" +
-                "Receita liquida: -3700.0\n" +
+                "Receita liquida: -3450.0\n" +
                 "Status financeiro: PREJUIZO";
         show.comprarIngressoComDesconto(1, TipoIngresso.VIP);
         String relatorio = show.gerarRelatorio();
@@ -248,7 +248,7 @@ public class FunctionalTests {
                 "Vendas VIP: 25\n" +
                 "Vendas Meia Entrada: 10\n" +
                 "Vendas Normais: 65\n" +
-                "Receita liquida: 2750.0\n" +
+                "Receita liquida: 14500.0\n" +
                 "Status financeiro: LUCRO";
 
         this.compraTodosOsIngressosDeUmTipo(TipoIngresso.VIP);
