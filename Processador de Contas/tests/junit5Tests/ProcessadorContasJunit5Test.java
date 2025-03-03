@@ -1,6 +1,6 @@
 package junit5Tests;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 import org.junit.jupiter.api.*;
 import processador.*;
 
