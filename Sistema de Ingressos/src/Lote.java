@@ -15,7 +15,7 @@ public class Lote {
         this.id = sequence.incrementAndGet();
         this.ingressos = new ArrayList<>();
         this.totalIngressos = totalIngressos;
-        this.desconto = (1 - desconto);
+        this.desconto = desconto;
         this.valorIngresso = valorIngresso;
         this.createIngressos();
     }
@@ -48,7 +48,7 @@ public class Lote {
         if (ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA) {
             return ingresso.getValorIngresso();
         }
-        return ingresso.getValorIngresso() * desconto;
+        return ingresso.getValorIngresso() * (1 - desconto);
     }
 
     private void geraIngressos(int qnt, TipoIngresso tipo) {
