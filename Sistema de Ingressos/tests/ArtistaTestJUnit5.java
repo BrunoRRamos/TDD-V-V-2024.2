@@ -1,7 +1,7 @@
 import Anotations.UnitTest;
 import org.junit.jupiter.api.*;
 
-class ArtistaTest {
+class ArtistaTestJUnit5 {
     private final Artista artista = new Artista("Tim Maia", 30000);
 
     @UnitTest

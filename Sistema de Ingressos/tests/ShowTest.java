@@ -206,11 +206,10 @@ public class ShowTest {
                 "Vendas VIP: 1\n" +
                 "Vendas Meia Entrada: 0\n" +
                 "Vendas Normais: 0\n" +
-                "Receita liquida: -37437.5025\n" +
+                "Receita liquida: -37125.015\n" +
                 "Status financeiro: PREJUIZO";
         show.comprarIngressoComDesconto(1, TipoIngresso.VIP);
         String relatorio = show.gerarRelatorio();
-        System.out.println(relatorio);
         assertEquals(relatorioExpected, relatorio);
     }
 }

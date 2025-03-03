@@ -3,7 +3,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IngressoTest {
+class IngressoTestJUnit5 {
     private final Ingresso ingressoNormal =  new Ingresso("1", TipoIngresso.NORMAL, StatusIngresso.DISPONIVEL, 200);
     private final Ingresso ingressoVip =  new Ingresso("2", TipoIngresso.VIP, StatusIngresso.DISPONIVEL, 200);
     private final Ingresso ingressoMeia =  new Ingresso("3", TipoIngresso.MEIA_ENTRADA, StatusIngresso.DISPONIVEL, 200);

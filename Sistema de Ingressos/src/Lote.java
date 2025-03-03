@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Lote {
-    private static final AtomicInteger sequence = new AtomicInteger(0);
+    private volatile AtomicInteger sequence = new AtomicInteger(0);
     private int id;
     private List<Ingresso> ingressos;
     private int totalIngressos;
@@ -15,7 +15,7 @@ public class Lote {
         this.id = sequence.incrementAndGet();
         this.ingressos = new ArrayList<>();
         this.totalIngressos = totalIngressos;
-        this.desconto = (1 - desconto);
+        this.desconto = desconto;
         this.valorIngresso = valorIngresso;
         this.createIngressos();
     }
@@ -48,7 +48,7 @@ public class Lote {
         if (ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA) {
             return ingresso.getValorIngresso();
         }
-        return ingresso.getValorIngresso() * desconto;
+        return ingresso.getValorIngresso() * (1 - desconto);
     }
 
     private void geraIngressos(int qnt, TipoIngresso tipo) {
@@ -61,7 +61,7 @@ public class Lote {
 
     private void createIngressos() {
         if (this.totalIngressos <= 0) {
-            throw new RuntimeException("Número de ingressos inválido");
+            throw new IllegalArgumentException("Número de ingressos inválido");
         }
 
         int qntVip = (int) Math.ceil(this.totalIngressos * 0.25);
