@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Lote {
-    private static final AtomicInteger counter = new AtomicInteger(0);
+    private static final AtomicInteger sequence = new AtomicInteger(0);
     private int id;
     private List<Ingresso> ingressos;
     private int totalIngressos;
@@ -12,16 +12,16 @@ public class Lote {
     private double valorIngresso;
 
     public Lote(int totalIngressos, double desconto, double valorIngresso) {
-        this.id = this.counter.incrementAndGet();
+        this.id = sequence.incrementAndGet();
         this.ingressos = new ArrayList<>();
         this.totalIngressos = totalIngressos;
-        this.desconto = desconto;
+        this.desconto = (1 - desconto);
         this.valorIngresso = valorIngresso;
         this.createIngressos();
     }
 
     public void resetCounter() {
-        this.counter.set(0);
+        sequence.set(0);
     }
 
     public int getId() {
@@ -46,9 +46,9 @@ public class Lote {
 
     public double getValorIngressoComDesconto(Ingresso ingresso) {
         if (ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA) {
-            return valorIngresso;
+            return ingresso.getValorIngresso();
         }
-        return valorIngresso * desconto;
+        return ingresso.getValorIngresso() * desconto;
     }
 
     private void geraIngressos(int qnt, TipoIngresso tipo) {
