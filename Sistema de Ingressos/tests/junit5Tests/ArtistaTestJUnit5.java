@@ -1,4 +1,7 @@
+package junit5Tests;
+
 import Anotations.UnitTest;
+import core.Artista;
 import org.junit.jupiter.api.*;
 
 class ArtistaTestJUnit5 {

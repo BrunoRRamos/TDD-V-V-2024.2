@@ -1,4 +1,9 @@
+package junit5Tests;
+
 import Anotations.UnitTest;
+import core.Ingresso;
+import core.Lote;
+import core.TipoIngresso;
 import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.Assertions.*;

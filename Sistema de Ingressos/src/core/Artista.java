@@ -1,3 +1,5 @@
+package core;
+
 public class Artista {
     private String nome;
     private double cache;

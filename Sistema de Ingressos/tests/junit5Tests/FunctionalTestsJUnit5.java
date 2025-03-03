@@ -1,7 +1,9 @@
-import Anotations.UnitTest;
+package junit5Tests;
+
+import Anotations.FunctionalTest;
+import core.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 
 import java.util.Date;
 import java.util.List;
@@ -10,17 +12,17 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class ShowTestJUnit5 {
+public class FunctionalTestsJUnit5 {
     private Show show;
 
     @BeforeEach
     public void setUp() throws Exception {
         Date dataDoShow = new Date();
-        Double totalDespesaInfra = 50000.00;
+        Double totalDespesaInfra = 5000.00;
         boolean showEmDataEspecial = true;
         int totalIngressos = 100;
-        double valorIngresso = 249.99;
-        Artista artista = new Artista("Sorriso Ronaldo", 30000);
+        double valorIngresso = 200.00;
+        Artista artista = new Artista("Blinding Azeitona", 3000);
 
         this.show = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos, valorIngresso, artista);
     }
@@ -31,8 +33,18 @@ public class ShowTestJUnit5 {
         this.show = null;
     }
 
-    @UnitTest
-    @DisplayName("Testa o retorno da quantidade de ingressos VIP")
+    private void compraTodosOsIngressosDeUmTipo(TipoIngresso tipoIngresso) {
+        Lote lote = show.getLoteById(1);
+        List<Ingresso> ingressos = lote.getIngressos()
+                .stream()
+                .filter(e -> e.getTipo() == tipoIngresso &&
+                        e.getStatus() == StatusIngresso.DISPONIVEL)
+                .toList();
+
+        ingressos.forEach(ingresso -> ingresso.setStatus(StatusIngresso.VENDIDO));
+    }
+
+    @FunctionalTest
     public void TestaQuantidadeDeIngressosVip() {
         Lote lote = show.getLoteById(1);
         List<Ingresso> ingressosVip = lote.getIngressos()
@@ -50,8 +62,7 @@ public class ShowTestJUnit5 {
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa o retorno da quantidade de ingressos MEIA_ENTRADA")
+    @FunctionalTest
     public void TestaQuantidadeDeIngressosMeia() {
         Lote lote = show.getLoteById(1);
         List<Ingresso> ingressosMeia = lote.getIngressos()
@@ -64,8 +75,7 @@ public class ShowTestJUnit5 {
         assertEquals(totalIngressosMeia, qntMeiaExpected);
     }
 
-    @UnitTest
-    @DisplayName("Testa o retorno da quantidade de ingressos NORMAL")
+    @FunctionalTest
     public void TestaQuantidadeDeIngressosNormal() {
         Lote lote = show.getLoteById(1);
         List<Ingresso> ingressosNormal = lote.getIngressos()
@@ -80,13 +90,13 @@ public class ShowTestJUnit5 {
         assertEquals(totalIngressosNormal, qntNormalExpected);
     }
 
-    @UnitTest
-    @DisplayName("Testa o retorno do valor de ingressos VIP")
+    @FunctionalTest
     public void TestaValorDoIngressoVip() {
         Lote lote = show.getLoteById(1);
         Ingresso ingressoVip = lote.getIngressos()
                 .stream()
-                .filter(e -> e.getTipo() == TipoIngresso.VIP)
+                .filter(e -> e.getTipo() == TipoIngresso.VIP &&
+                        e.getStatus() == StatusIngresso.DISPONIVEL)
                 .findFirst()
                 .orElse(null);
 
@@ -96,13 +106,13 @@ public class ShowTestJUnit5 {
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa o retorno do valor de ingressos MEIA_ENTRADA")
+    @FunctionalTest
     public void TestaValorDoIngressoMeia() {
         Lote lote = show.getLoteById(1);
         Ingresso ingressoMeia = lote.getIngressos()
                 .stream()
-                .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA)
+                .filter(e -> e.getTipo() == TipoIngresso.MEIA_ENTRADA &&
+                        e.getStatus() == StatusIngresso.DISPONIVEL)
                 .findFirst()
                 .orElse(null);
 
@@ -112,13 +122,13 @@ public class ShowTestJUnit5 {
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa o retorno do valor de ingressos NORMAL")
+    @FunctionalTest
     public void TestaValorDoIngressoNormal() {
         Lote lote = show.getLoteById(1);
         Ingresso ingressoNormal = lote.getIngressos()
                 .stream()
-                .filter(e -> e.getTipo() == TipoIngresso.NORMAL)
+                .filter(e -> e.getTipo() == TipoIngresso.NORMAL &&
+                        e.getStatus() == StatusIngresso.DISPONIVEL)
                 .findFirst()
                 .orElse(null);
 
@@ -128,38 +138,7 @@ public class ShowTestJUnit5 {
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa o comprar ingressos VIP")
-    public void TestaCompraDeIngressoVip() {
-        Ingresso ingressoComprado = this.show.comprarIngresso(1, TipoIngresso.VIP);
-        assertAll(() -> {
-            assertNotNull(ingressoComprado);
-            assertSame(ingressoComprado.getStatus(), StatusIngresso.VENDIDO);
-        });
-    }
-
-    @UnitTest
-    @DisplayName("Testa o comprar ingressos MEIA_ENTRADA")
-    public void TestaCompraDeIngressoMeia() {
-        Ingresso ingressoComprado = this.show.comprarIngresso(1, TipoIngresso.MEIA_ENTRADA);
-        assertAll(() -> {
-            assertNotNull(ingressoComprado);
-            assertSame(ingressoComprado.getStatus(), StatusIngresso.VENDIDO);
-        });
-    }
-
-    @UnitTest
-    @DisplayName("Testa o comprar ingressos NORMAL")
-    public void TestaCompraDeIngressoNormal() {
-        Ingresso ingressoComprado = this.show.comprarIngresso(1, TipoIngresso.NORMAL);
-        assertAll(() -> {
-            assertNotNull(ingressoComprado);
-            assertSame(ingressoComprado.getStatus(), StatusIngresso.VENDIDO);
-        });
-    }
-
-    @UnitTest
-    @DisplayName("Testa criar novo lote")
+    @FunctionalTest
     public void TestaCriacaoDeNovoLote() {
         int numeroDeIngressos = 100;
         double desconto = 0.10;
@@ -169,8 +148,7 @@ public class ShowTestJUnit5 {
         assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
     }
 
-    @UnitTest
-    @DisplayName("Testa criar novo lote sem desconto")
+    @FunctionalTest
     public void TestaCriarLoteSemDesconto() {
         int numeroDeIngressos = 100;
         double desconto = 0;
@@ -183,8 +161,17 @@ public class ShowTestJUnit5 {
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa criar novo lote com desconto maio que 0.25")
+    @FunctionalTest
+    public void TestaCriarLoteComDescontoIgualA25() {
+        int numeroDeIngressos = 100;
+        double desconto = 0.25;
+        double valoringresso = 300.0;
+        Lote lote = this.show.criarNovoLote(numeroDeIngressos, desconto, valoringresso);
+
+        assertEquals(lote.getTotalIngressos(), numeroDeIngressos);
+    }
+
+    @FunctionalTest
     public void TestaCriarLoteComDescontoMaiorQue25() {
         int numeroDeIngressos = 100;
         double desconto = 0.26;
@@ -196,8 +183,7 @@ public class ShowTestJUnit5 {
         assertEquals("Desconto deve ser menor ou igual a 25%", exception.getMessage());
     }
 
-    @UnitTest
-    @DisplayName("Testa criar novo lote com desconto negativo")
+    @FunctionalTest
     public void TestaCriarLoteComDescontoNegativo() {
         int numeroDeIngressos = 100;
         double desconto = -0.10;
@@ -209,70 +195,88 @@ public class ShowTestJUnit5 {
         assertEquals("Desconto deve ser maior que zero", exception.getMessage());
     }
 
-    @UnitTest
-    @DisplayName("Testa comprar ingresso VIP com desconto")
+    @FunctionalTest
     public void TestaComprarIngresssoVipComDesconto() {
         int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.VIP);
         double valor = show.comprarIngressoComDesconto(1, TipoIngresso.VIP);
         int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.VIP);
 
         assertAll(() -> {
-            assertEquals(totalIngressosDepoisCompra, totalIngressosAntesCompra - 1);
-            assertEquals((499.98 * 0.25), valor, 0.0);
+            assertTrue(totalIngressosDepoisCompra == totalIngressosAntesCompra - 1);
+            assertEquals((400.00 * 0.25), valor, 0.0);
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa comprar ingresso NORMAL com desconto")
+    @FunctionalTest
     public void TestaComprarIngresssoNormalComDesconto() {
         int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.NORMAL);
         double valor = show.comprarIngressoComDesconto(1, TipoIngresso.NORMAL);
         int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.NORMAL);
-
         assertAll(() -> {
-            assertEquals(totalIngressosDepoisCompra, totalIngressosAntesCompra - 1);
-            assertEquals((249.99 * 0.25), valor, 0.0);
+            assertTrue(totalIngressosDepoisCompra == totalIngressosAntesCompra - 1);
+            assertEquals((200.00 * 0.25), valor, 0.0);
         });
     }
 
-    @UnitTest
-    @DisplayName("Testa comprar ingresso MEIA_ENTRADA com desconto")
-    public void TestaComprarIngresssoMeiaComDesconto() {
+    @FunctionalTest
+    public void TestaComprarIngresssoMeialComDesconto() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             show.comprarIngressoComDesconto(1, TipoIngresso.MEIA_ENTRADA);
         });
         assertEquals("Desconto não aplicavel a ingresso do tipo: MEIA_ENTRADA", exception.getMessage());
     }
 
-    @UnitTest
-    @DisplayName("Testa gerar relatorio do show")
-    public void TestaGerarRelatorioShow() {
+    @FunctionalTest
+    public void TestaComprarIngresssoVipSemDesconto() {
+        int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.VIP);
+        show.comprarIngresso(1, TipoIngresso.VIP);
+        int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.VIP);
+        assertEquals(totalIngressosDepoisCompra, totalIngressosAntesCompra - 1);
+    }
+
+    @FunctionalTest
+    public void TestaComprarIngresssoNormalSemDesconto() {
+        int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.NORMAL);
+        show.comprarIngresso(1, TipoIngresso.NORMAL);
+        int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.NORMAL);
+        assertEquals(totalIngressosDepoisCompra, totalIngressosAntesCompra - 1);
+    }
+
+    @FunctionalTest
+    public void TestaComprarIngresssoMeialSemDesconto() {
+        int totalIngressosAntesCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.MEIA_ENTRADA);
+        show.comprarIngresso(1, TipoIngresso.MEIA_ENTRADA);
+        int totalIngressosDepoisCompra = show.contaTotalIngressosDisponiveis(1, TipoIngresso.MEIA_ENTRADA);
+        assertEquals(totalIngressosDepoisCompra, totalIngressosAntesCompra - 1);
+    }
+
+    @FunctionalTest
+    public void TestaGerarRelatorioShowComPrejuizo() {
         String relatorioExpected = "Relatório de Vendas:\n" +
                 "Vendas VIP: 1\n" +
                 "Vendas Meia Entrada: 0\n" +
                 "Vendas Normais: 0\n" +
-                "Receita liquida: -37125.015\n" +
+                "Receita liquida: -3450.0\n" +
                 "Status financeiro: PREJUIZO";
         show.comprarIngressoComDesconto(1, TipoIngresso.VIP);
         String relatorio = show.gerarRelatorio();
         assertEquals(relatorioExpected, relatorio);
     }
 
-    @UnitTest
-    @DisplayName("Testa comprar ingresso sem ingressos diponiveis")
-    public void TestaComprarIngresssoSemIngressosDisponiveis() {
-        Date dataDoShow = new Date();
-        Double totalDespesaInfra = 50000.00;
-        boolean showEmDataEspecial = true;
-        int totalIngressos = 1;
-        double valorIngresso = 249.99;
-        Artista artista = new Artista("Sorriso Ronaldo", 30000);
+    @FunctionalTest
+    public void TestaGerarRelatorioShowComLucro() {
+        String relatorioExpected = "Relatório de Vendas:\n" +
+                "Vendas VIP: 25\n" +
+                "Vendas Meia Entrada: 10\n" +
+                "Vendas Normais: 65\n" +
+                "Receita liquida: 14500.0\n" +
+                "Status financeiro: LUCRO";
 
-        Show novoShow = new Show(dataDoShow, totalDespesaInfra, showEmDataEspecial, totalIngressos, valorIngresso, artista);
+        this.compraTodosOsIngressosDeUmTipo(TipoIngresso.VIP);
+        this.compraTodosOsIngressosDeUmTipo(TipoIngresso.MEIA_ENTRADA);
+        this.compraTodosOsIngressosDeUmTipo(TipoIngresso.NORMAL);
 
-        assertThrows(RuntimeException.class, () -> {
-            novoShow.comprarIngressoComDesconto(1, TipoIngresso.VIP);
-            novoShow.comprarIngressoComDesconto(1, TipoIngresso.NORMAL);
-        });
+        String relatorio = show.gerarRelatorio();
+        assertEquals(relatorioExpected, relatorio);
     }
 }

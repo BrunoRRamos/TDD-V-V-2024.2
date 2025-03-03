@@ -1,3 +1,5 @@
+package core;
+
 public class Ingresso {
     private String id;
     private TipoIngresso tipo;
