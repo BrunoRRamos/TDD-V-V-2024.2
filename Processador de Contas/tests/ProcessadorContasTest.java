@@ -9,6 +9,7 @@ import org.junit.Test;
 import processador.*;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ProcessadorContasTest {
 
@@ -189,6 +190,7 @@ public class ProcessadorContasTest {
     @Test
     public void testPagamentoTransferenciaNoPrazo() {
         ProcessadorContas processadorContas = new ProcessadorContas(faturaTranferencia);
+        processadorContas.pagarConta(1L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.JANUARY, 25), BigDecimal.valueOf(100));
         processadorContas.pagarConta(2L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.JANUARY, 25), BigDecimal.valueOf(100));
         assertEquals(StatusFatura.PAGA, processadorContas.getStatusFatura());
     }
@@ -196,6 +198,7 @@ public class ProcessadorContasTest {
     @Test
     public void testPagamentoTransferenciaNoDia() {
         ProcessadorContas processadorContas = new ProcessadorContas(faturaTranferencia);
+        processadorContas.pagarConta(1L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.FEBRUARY, 10), BigDecimal.valueOf(100));
         processadorContas.pagarConta(2L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.FEBRUARY, 10), BigDecimal.valueOf(100));
         assertEquals(StatusFatura.PAGA, processadorContas.getStatusFatura());
     }
@@ -203,9 +206,13 @@ public class ProcessadorContasTest {
     @Test
     public void testPagamentoTransferenciaAtrasada() {
         ProcessadorContas processadorContas = new ProcessadorContas(faturaTranferencia);
-        processadorContas.pagarConta(2L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.FEBRUARY, 19), BigDecimal.valueOf(100));
-        assertEquals(StatusFatura.PENDENTE, processadorContas.getStatusFatura());
+        processadorContas.pagarConta(1L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.FEBRUARY, 10), BigDecimal.valueOf(100));
+        Exception e = assertThrows(RuntimeException.class, () -> processadorContas.pagarConta(2L, TiposPagamento.TRANSFERENCIA_BANCARIA, new Date(2024 - 1900, Calendar.FEBRUARY, 28), BigDecimal.valueOf(100)));
+        assertAll(
+                () -> assertEquals(e.getMessage(), "A data do pagamento deve ser anterior à data da fatura"),
+                () -> assertEquals(StatusFatura.PENDENTE, processadorContas.getStatusFatura()));
     }
+
 
     @Test
     public void testContaAposFatura() {
@@ -234,11 +241,13 @@ public class ProcessadorContasTest {
     @Test
     public void testFaturaComValorMenor() {
         ProcessadorContas processadorContas = new ProcessadorContas(fatura1);
-        processadorContas.pagarConta(1L, TiposPagamento.BOLETO, new Date(2024 - 1900, Calendar.FEBRUARY, 19), BigDecimal.valueOf(0));
+        Exception e = assertThrows(RuntimeException.class, () -> processadorContas.pagarConta(1L, TiposPagamento.BOLETO, new Date(2024 - 1900, Calendar.FEBRUARY, 19), BigDecimal.valueOf(0)));
         processadorContas.pagarConta(2L, TiposPagamento.BOLETO, new Date(2024 - 1900, Calendar.FEBRUARY, 19), BigDecimal.valueOf(400));
         processadorContas.pagarConta(3L, TiposPagamento.BOLETO, new Date(2024 - 1900, Calendar.FEBRUARY, 19), BigDecimal.valueOf(600));
 
-        assertEquals(StatusFatura.PENDENTE, processadorContas.getStatusFatura());
+        assertAll(
+                () -> assertEquals(e.getMessage(), "O valor do pagamento não é suficiente"),
+                () -> assertEquals(StatusFatura.PENDENTE, processadorContas.getStatusFatura()));
     }
 
     @Test

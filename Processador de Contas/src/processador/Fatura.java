@@ -40,40 +40,16 @@ public class Fatura {
         return data;
     }
 
-    public void setData(Date data) {
-        this.data = data;
-    }
-
     public BigDecimal getValorTotal() {
         return valorTotal;
-    }
-
-    public void setValorTotal(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
-    public String getNomeCliente() {
-        return nomeCliente;
-    }
-
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
     }
 
     public List<Conta> getContas() {
         return contas;
     }
 
-    public void setContas(List<Conta> contas) {
-        this.contas = contas;
-    }
-
     public BigDecimal getValor() {
         return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
     }
 
     public StatusFatura getStatusFatura() {
